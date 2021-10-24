@@ -447,8 +447,7 @@ end_program:
 ret
 
 ; 20H is the space character, duplicate 20H 9 times (for 9 positions)  
-; pos DB 9 DUP(20H) ; Array for the 9 grid positions ; 65, 66, 67, 68, 69, 70, 71, 72, 73
-pos DB "  O O O  "
+pos DB 9 DUP(20H) ; Array for the 9 grid positions
 
 message DB ", choose position$" ; $ is the terminating character (sentinel character)
 
