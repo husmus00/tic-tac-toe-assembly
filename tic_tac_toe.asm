@@ -286,8 +286,9 @@ set_chosen_position PROC
 set_chosen_position ENDP
 
 check_victory PROC
-    ; For each row, column or diagonal to check, we check the first position with the second, and then with the third.
-    ; If the two comparisons are true, then we have a winner. This will be based on the current player since, if player X plays and
+    ; First, we load the current player's letter (X or O) into AL.
+    ; Then, for each row, column or diagonal to check, compare each of the 3 positions with AL.
+    ; If all the comparisons are true, then we have a winner. This will be based on the current player since, if player X plays and
     ; a victory condition is found, it must have been X
     ; If the first position is a space " ", abort immediately since the line can't be a victory condition
     
@@ -306,15 +307,105 @@ check_victory PROC
     
     ; Row 1, 2, 3
     cmp pos[0], " "
-    je no_victory ; Check for " " empty position
+    je continue_456 ; Check for " " empty position
     
     cmp AL, pos[0]
-    jne no_victory
+    jne continue_456
     cmp AL, pos[1]
-    jne no_victory
+    jne continue_456
+    cmp AL, pos[2]
+    jne continue_456   
+    jmp victory
+    
+    ; Row 4, 5, 6
+    continue_456:
+    cmp pos[3], " "
+    je continue_789 ; Check for " " empty position
+    
+    cmp AL, pos[3]
+    jne continue_789
+    cmp AL, pos[4]
+    jne continue_789
+    cmp AL, pos[5]
+    jne continue_789    
+    jmp victory
+    
+    ; Row 7, 8, 9
+    continue_789:
+    cmp pos[6], " "
+    je continue_147 ; Check for " " empty position
+    
+    cmp AL, pos[6]
+    jne continue_147
+    cmp AL, pos[7]
+    jne continue_147
+    cmp AL, pos[8]
+    jne continue_147    
+    jmp victory
+    
+    ; Column 1, 4, 7
+    continue_147:
+    cmp pos[0], " "
+    je continue_258 ; Check for " " empty position
+    
+    cmp AL, pos[0]
+    jne continue_258
+    cmp AL, pos[3]
+    jne continue_258
+    cmp AL, pos[6]
+    jne continue_258    
+    jmp victory
+    
+    ; Column 2, 5, 8
+    continue_258:
+    cmp pos[1], " "
+    je continue_369 ; Check for " " empty position
+    
+    cmp AL, pos[1]
+    jne continue_369
+    cmp AL, pos[4]
+    jne continue_369
+    cmp AL, pos[7]
+    jne continue_369    
+    jmp victory
+    
+    ; Column 3, 6, 9
+    continue_369:
+    cmp pos[2], " "
+    je continue_159 ; Check for " " empty position
+    
+    cmp AL, pos[2]
+    jne continue_159
+    cmp AL, pos[5]
+    jne continue_159
+    cmp AL, pos[8]
+    jne continue_159    
+    jmp victory
+    
+    ; Diagonal 1, 5, 9
+    continue_159:
+    cmp pos[0], " "
+    je continue_357 ; Check for " " empty position
+    
+    cmp AL, pos[0]
+    jne continue_357
+    cmp AL, pos[4]
+    jne continue_357
+    cmp AL, pos[8]
+    jne continue_357    
+    jmp victory
+    
+    ; Diagonal 3, 5, 7
+    continue_357:
+    cmp pos[2], " "
+    je no_victory ; Check for " " empty position
+    
     cmp AL, pos[2]
     jne no_victory
-    
+    cmp AL, pos[4]
+    jne no_victory
+    cmp AL, pos[6]
+    jne no_victory    
     jmp victory
     
     victory:
@@ -356,7 +447,8 @@ end_program:
 ret
 
 ; 20H is the space character, duplicate 20H 9 times (for 9 positions)  
-pos DB 9 DUP(20H) ; Array for the 9 grid positions ; 65, 66, 67, 68, 69, 70, 71, 72, 73
+; pos DB 9 DUP(20H) ; Array for the 9 grid positions ; 65, 66, 67, 68, 69, 70, 71, 72, 73
+pos DB "  O O O  "
 
 message DB ", choose position$" ; $ is the terminating character (sentinel character)
 
